@@ -1,23 +1,9 @@
 package com.mycompany.a1;
 
 
-public class MissileLauncher extends MovableGameObject implements ISteerable {
+public class MissileLauncher extends MovableGameObject{
 	
-	private int direction;
-		
-	public MissileLauncher() {
-		
-	}
-	
-	
-	/**
-	 * Steer the Missile Launcher.
-	 * 
-	 */
-	public void steer(int newDirection) {		
-		this.direction = ((newDirection % 360 + 360) % 360);
-		
-	}
+
 	
 	/**
 	 * Override method for move

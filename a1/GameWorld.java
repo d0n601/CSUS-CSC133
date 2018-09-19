@@ -14,7 +14,9 @@ public class GameWorld {
 
 	
 	
-	
+	/**
+	 * Initiate game world.
+	 */
 	public void init() {
 		this.clock = 0; 
 		this.score = 0;
@@ -139,7 +141,7 @@ public class GameWorld {
 	 */
 	public void playerLauncherLeft() {
 		if(this.myShip != null) {
-			MissileLauncher ml = this.myShip.getMissileLauncher();
+			MissileLauncherSteerable ml = (MissileLauncherSteerable) this.myShip.getMissileLauncher();
 			ml.steer( ml.getDirection() - 20 );
 		}
 		else {
@@ -155,7 +157,7 @@ public class GameWorld {
 	 */
 	public void playerLauncherRight() {
 		if(this.myShip != null) {
-			MissileLauncher ml = this.myShip.getMissileLauncher();
+			MissileLauncherSteerable ml = (MissileLauncherSteerable) this.myShip.getMissileLauncher();
 			ml.steer( ml.getDirection() + 20 );;
 		}
 		else {
@@ -189,7 +191,7 @@ public class GameWorld {
 	 */
 	public void playerShipReload() {
 		if(this.myShip != null) { 
-			this.myShip.reload();
+			this.myShip.setMissileCount(PlayerShip.MAX_MISSILES);
 			System.out.println("Player Ship reloaded!");
 		}
 		else {
@@ -484,10 +486,15 @@ public class GameWorld {
 	 * 
 	 */
 	public void printDisplay() {
-		System.out.println("==========================================================================");
-		System.out.println("LIVES: "+this.lives+"  SCORE: " + this.score + "   TIME: " + this.clock + " "
-				+ "MISSILES: " + this.myShip.getMissileCount());
-		System.out.println("==========================================================================");
+		if(this.myShip != null) {
+			System.out.println("==========================================================================");
+			System.out.println("LIVES: "+this.lives+"  SCORE: " + this.score + "   TIME: " + this.clock + " "
+					+ "MISSILES: " + this.myShip.getMissileCount());
+			System.out.println("==========================================================================");
+		}
+		else {
+			System.out.println("Cannot execute ‘print display’ – no Player Ship yet added to the Game World, game not started.");
+		}
 	}
 
 	

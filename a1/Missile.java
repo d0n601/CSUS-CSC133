@@ -4,8 +4,8 @@ import com.codename1.charts.util.ColorUtil;
 
 public class Missile extends MovableGameObject {
 
-	private GameObject owner; // Who launched the missile.
-	private int fuelLevel;
+	private GameObject owner;
+	private int fuelLevel; 
 	
 	public static final int MAX_FUEL = 10;
 	

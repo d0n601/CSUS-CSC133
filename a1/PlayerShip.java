@@ -2,14 +2,12 @@ package com.mycompany.a1;
 
 import com.codename1.charts.util.ColorUtil;
 
-public class PlayerShip extends MovableGameObject implements ISteerable {
+public class PlayerShip extends Ship implements ISteerable {
 
-	private int direction;
-	private int missileCount;
-	private MissileLauncher missileLauncher;
+	private MissileLauncherSteerable missileLauncher;	
 	
-	private static final int NORTH = 0;
-	private static final int MISSILE_COUNT = 10;
+	public static final int NORTH = 0;
+	public static final int MAX_MISSILES = 10;
 	
 	
 	/**
@@ -17,14 +15,13 @@ public class PlayerShip extends MovableGameObject implements ISteerable {
 	 * 
 	 */
 	public PlayerShip() {
+		this.missileLauncher = new MissileLauncherSteerable();
 		this.setLocation(512, 384); // Position set to center of the map, as per specifications
 		this.setColor(ColorUtil.MAGENTA); // Set player ship color.
 		this.setSpeed(0);
-		this.direction = NORTH; // Override direction being random, set to North.
-		this.missileCount = MISSILE_COUNT; // Maximum number.
-		this.missileLauncher = new MissileLauncher(); // Create the Player Ship's missile launcher.
-		this.missileLauncher.setLocation(512, 384);  // Set the Ship's missile launcher location to match the ship.
-		this.missileLauncher.steer(this.getDirection()); // Set the Ship's missile launcher direction to match.
+		this.setDirection(NORTH); // Override direction being random, set to North.
+		this.setMissileCount(MAX_MISSILES); // Maximum number.
+		this.getMissileLauncher().setDirection(this.getDirection()); // Set the direction of the missile launcher.
 	}
 	
 	
@@ -50,83 +47,18 @@ public class PlayerShip extends MovableGameObject implements ISteerable {
 	 * 
 	 */
 	public void steer(int newDirection) {		
-		this.direction = ((newDirection % 360 + 360) % 360);
+		this.setDirection((newDirection % 360 + 360) % 360);
 		
 	}
 	
+
 	
 	/**
-	 * Move the Player Ship, and it's missile launcher.
-	 * 
-	 */
-	public void move() {
-		super.move();
-		this.missileLauncher.setLocation(this.getLocation().get(0),this.getLocation().get(1));
-	}
-	
-	
-	
-	/**
-	 * Get reference to Ship's MissileLauncher.
+	 * Return the ship's missile launcher
 	 * 
 	 */
 	public MissileLauncher getMissileLauncher() {
-		return this.missileLauncher;
-	}
-	
-	
-
-	
-	/**
-	 * Fire a missile from the player's ship.
-	 * 
-	 */
-	public Missile fireMissile() {
-		
-		// If there are missiles to fire
-		if(this.missileCount > 0) {
-		
-			Missile newMissile = new Missile(); // Create a new missile.
-			newMissile.setOwner(this);
-			newMissile.setLocation(this.getLocation().get(0), this.getLocation().get(1));
-			newMissile.setSpeed(this.getSpeed() + 2); // Set speed 2 clicks faster than ship's.
-			newMissile.setDirection(this.missileLauncher.getDirection()); // Missile's direction set to launcher's.
-			
-			this.missileCount --; // Reduce missile count.
-			
-			System.out.println("Player Ship fired missile.");
-			
-			return newMissile;
-
-		}
-	
-		System.out.println("Cannot execute ‘fire missile’ – no missiles left!");
-		
-		return null;
-		
-	}
-	
-	
-	
-	
-	/**
-	 * Returns the number of missiles a ship has.
-	 * 
-	 * @return missileCount
-	 */
-	public int getMissileCount() {
-		return this.missileCount;
-	}
-	
-	
-	
-	
-	/**
-	 * Reset the ship's missile count.
-	 * 
-	 */
-	public void reload() {
-		this.missileCount = 10;
+		return missileLauncher;
 	}
 	
 	
@@ -141,7 +73,7 @@ public class PlayerShip extends MovableGameObject implements ISteerable {
 		String s = "Player Ship: loc="+this.getLocation().get(0)+","+this.getLocation().get(1)+
 				" color=["+ColorUtil.red(this.getColor())+", "+ColorUtil.green(this.getColor())+", "+ColorUtil.blue(this.getColor())+"]"
 						+ " speed="+this.getSpeed()+" dir="+this.getDirection()+" missiles="+this.getMissileCount()
-						+" "+ this.missileLauncher.toString();
+						+" "+ this.getMissileLauncher().toString();
 		return s;
 	}
 }
