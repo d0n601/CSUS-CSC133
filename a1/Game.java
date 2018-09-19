@@ -48,16 +48,16 @@ public class Game extends Form {
 				
 				switch (sCommand.charAt(0)){
 					case 'a':
-						gw.addAsteroid(); //  ------------------------------------------------------
+						gw.addAsteroid(); //add new asteroid to the game world.
 						break;
 					case 'y':
-						gw.addNPS(); //  ------------------------------------------------------
+						gw.addNPS(); //add new NPS to the game world.
 						break;
 					case 'b':
-						gw.addSpaceStation(); //  ------------------------------------------------------
+						gw.addSpaceStation(); //add new blinking space station to the game world.
 						break;		
 					case 's':
-						gw.addPlayerShip(); //  ------------------------------------------------------
+						gw.addPlayerShip(); //attempt to add player ship to the game world.
 						break;
 					case 'i':
 						gw.iPlayerShipSpeed(); //increase speed of player ship by small amount (not above 10).
@@ -114,10 +114,10 @@ public class Game extends Form {
 						gw.tickClock(); //tell the game world that the “game clock” has ticked. 
 						break;
 					case 'p':
-						gw.printDisplay(); //
+						gw.printDisplay(); //print the heads up display, lives, clock, missile count, and score.
 						break;
 					case 'm':
-						gw.printMap(); //
+						gw.printMap(); //print the text based representation of the map.
 						break;
 					case 'q':
 						gw.quitGame(); //confirm the user’s intent to quit before exiting, then exit.

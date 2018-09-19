@@ -16,6 +16,7 @@ public class MissileLauncher extends MovableGameObject{
 	/**
 	 * Return a string with the direction.
 	 * 
+	 * @return s
 	 */
 	public String toString() {
 		return "Missile Launcher dir = " + this.getDirection();

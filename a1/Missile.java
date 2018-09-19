@@ -4,7 +4,7 @@ import com.codename1.charts.util.ColorUtil;
 
 public class Missile extends MovableGameObject {
 
-	private GameObject owner;
+	private Ship owner;
 	private int fuelLevel; 
 	
 	public static final int MAX_FUEL = 10;
@@ -23,9 +23,9 @@ public class Missile extends MovableGameObject {
 	/**
 	 * Returns the owner of the missile.
 	 * 
-	 * 
+	 * @return GameObject
 	 */
-	public GameObject getOwner() {
+	public Ship getOwner() {
 		return this.owner;
 	}
 	
@@ -33,8 +33,9 @@ public class Missile extends MovableGameObject {
 	/**
 	 * Set the owner of the missile.
 	 * 
+	 * @param Ship
 	 */
-	public void setOwner(GameObject theOwner) {
+	public void setOwner(Ship theOwner) {
 		this.owner = theOwner;
 	}
 	
@@ -42,6 +43,7 @@ public class Missile extends MovableGameObject {
 	/**
 	 * Returns the current fuel level of the missile.
 	 * 
+	 * @return fuelLevel
 	 */
 	public int getFuelLevel() {
 		return this.fuelLevel;
@@ -51,6 +53,7 @@ public class Missile extends MovableGameObject {
 	/**
 	 * Sets the current fuel level of the missile.
 	 * 
+	 * @param fuelLevel
 	 */
 	public void setFuelLevel(int newFuelLevel) {
 		this.fuelLevel = newFuelLevel;
@@ -74,7 +77,7 @@ public class Missile extends MovableGameObject {
 			owner = "NPS";
 		}
 		 
-		String s = owner+"'s Missile: loc="+this.getLocation().get(0)+","+this.getLocation().get(1)+
+		String s = owner+"'s Missile: loc="+Math.round(this.getLocation().get(0)*10.0)/10.0+","+Math.round(this.getLocation().get(1)*10.0)/10.0+
 				" color=["+ColorUtil.red(this.getColor())+", "+ColorUtil.green(this.getColor())+", "+ColorUtil.blue(this.getColor())+"]"
 						+ " speed="+this.getSpeed()+" dir="+this.getDirection()+" fuel="+this.getFuelLevel();
 		return s;

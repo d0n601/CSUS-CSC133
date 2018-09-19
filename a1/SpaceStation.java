@@ -8,6 +8,12 @@ public class SpaceStation extends FixedGameObject {
 	private boolean on;
 	private int blinkRate;
 	
+	
+	/*
+	 * Construct new space station, set random blink rate 0-4 and
+	 * set color, all space stations initially appear active (blink on).
+	 * 
+	 */
 	public SpaceStation() {
 	    Random randy = new Random();
 	    blinkRate = randy.nextInt(4); // Blink rate between 0 and 4
@@ -39,7 +45,7 @@ public class SpaceStation extends FixedGameObject {
 	/**
 	 * Returns true if the space station is blinking on.
 	 * 
-	 * @return
+	 * @return boolean
 	 */
 	public boolean isOn() {
 		return this.on;
@@ -53,7 +59,7 @@ public class SpaceStation extends FixedGameObject {
 	 */
 	public String toString() {
 		 
-		String s = "Station: loc="+this.getLocation().get(0)+","+this.getLocation().get(1)+
+		String s = "Station: loc="+Math.round(this.getLocation().get(0)*10.0)/10.0+","+Math.round(this.getLocation().get(0)*10.0)/10.0+
 				" color=["+ColorUtil.red(this.getColor())+", "+ColorUtil.green(this.getColor())+", "+ColorUtil.blue(this.getColor())+"]"
 						+ " rate="+this.blinkRate;
 		return s;

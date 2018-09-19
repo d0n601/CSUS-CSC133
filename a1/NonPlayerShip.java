@@ -42,6 +42,7 @@ public class NonPlayerShip extends Ship {
 	/**
 	 * Return the ship's missile launcher
 	 * 
+	 * @return MissileLauncher
 	 */
 	public MissileLauncher getMissileLauncher() {
 		return this.missileLauncher;
@@ -56,7 +57,7 @@ public class NonPlayerShip extends Ship {
 	 */
 	public String toString() {
 		 
-		String s = "Non-Player Ship: loc="+this.getLocation().get(0)+","+this.getLocation().get(1)+
+		String s = "Non-Player Ship: loc="+Math.round(this.getLocation().get(0)*10.0)/10.0+","+Math.round(this.getLocation().get(1)*10.0)/10.0+
 				" color=["+ColorUtil.red(this.getColor())+", "+ColorUtil.green(this.getColor())+", "+ColorUtil.blue(this.getColor())+"]"
 						+ " speed="+this.getSpeed()+" dir="+this.getDirection()+" size="+this.getSize();
 		return s;

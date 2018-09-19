@@ -7,6 +7,7 @@ public class GameWorld {
 	private int clock;
 	private int score;
 	private int lives;
+	private boolean quit;
 	private PlayerShip myShip; 
 	private ArrayList<GameObject> gameObjects;
 	
@@ -15,13 +16,14 @@ public class GameWorld {
 	
 	
 	/**
-	 * Initiate game world.
+	 * Initiate game world, storing lives, clock, and all game objects..
 	 */
 	public void init() {
 		this.clock = 0; 
 		this.score = 0;
 		this.lives = MAX_LIVES;
 		this.gameObjects = new ArrayList<>();
+		this.quit = false;
 	}
 	
 	
@@ -471,9 +473,11 @@ public class GameWorld {
 		ArrayList<SpaceStation> allSpaceStations = this.getStations();
 		
 		for(SpaceStation sp: allSpaceStations) {
-			if( (this.clock % sp.getBlinkRate()) == 0) {
+			
+			if( sp.getBlinkRate() > 0 && (this.clock % sp.getBlinkRate()) == 0) {
 				sp.toggleOn();
 			}
+			
 		}
 		
 		// Advance the game clock forward one tick.
@@ -504,8 +508,16 @@ public class GameWorld {
 	 * 
 	 */
 	public void quitGame() {
-		System.exit(0);
+		if(this.quit) {
+			System.exit(0);
+		}
+		else {
+			this.quit = true;
+			System.out.println("Are you sure you wan't to quit? Type 'q' again to quit game.");
+		}
 	}
+	
+	
 	
 	/**
 	 * Print out all GameObjects within the GameWorld.

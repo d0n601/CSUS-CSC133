@@ -19,6 +19,7 @@ public abstract class Ship extends MovableGameObject {
 	/**
 	 * Get reference to Ship's MissileLauncher.
 	 * 
+	 * @return MissileLauncher
 	 */
 	public abstract MissileLauncher getMissileLauncher();
 	
@@ -28,6 +29,7 @@ public abstract class Ship extends MovableGameObject {
 	/**
 	 * Fire a missile from the player's ship.
 	 * 
+	 * @return Missile
 	 */
 	public Missile fireMissile() {
 		
@@ -71,6 +73,7 @@ public abstract class Ship extends MovableGameObject {
 	/**
 	 * Set the number of missiles a ship has.
 	 * 
+	 * @param newMissileCount
 	 */
 	public void setMissileCount(int newMissileCount) {
 		this.missileCount = newMissileCount;

@@ -5,6 +5,7 @@ public class MissileLauncherSteerable extends MissileLauncher implements ISteera
 	/**
 	 * Steer the Missile Launcher.
 	 * 
+	 * @param newDirection
 	 */
 	public void steer(int newDirection) {		
 		this.setDirection((newDirection % 360 + 360) % 360);

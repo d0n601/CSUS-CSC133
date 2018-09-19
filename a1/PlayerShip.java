@@ -28,6 +28,7 @@ public class PlayerShip extends Ship implements ISteerable {
 	/**
 	 * Set the speed of the player's ship.
 	 * 
+	 * @param newSpeed
 	 */
 	public void setSpeed(int newSpeed) {
 		if(newSpeed > 10) {
@@ -45,6 +46,7 @@ public class PlayerShip extends Ship implements ISteerable {
 	/**
 	 * Steer the player's ship.
 	 * 
+	 * @param newDirection
 	 */
 	public void steer(int newDirection) {		
 		this.setDirection((newDirection % 360 + 360) % 360);
@@ -56,6 +58,7 @@ public class PlayerShip extends Ship implements ISteerable {
 	/**
 	 * Return the ship's missile launcher
 	 * 
+	 * @return MissileLauncher
 	 */
 	public MissileLauncher getMissileLauncher() {
 		return missileLauncher;
@@ -70,7 +73,7 @@ public class PlayerShip extends Ship implements ISteerable {
 	 */
 	public String toString() {
 		 
-		String s = "Player Ship: loc="+this.getLocation().get(0)+","+this.getLocation().get(1)+
+		String s = "Player Ship: loc="+Math.round(this.getLocation().get(0)*10.0)/10.0+","+Math.round(this.getLocation().get(1)*10.0)/10.0+
 				" color=["+ColorUtil.red(this.getColor())+", "+ColorUtil.green(this.getColor())+", "+ColorUtil.blue(this.getColor())+"]"
 						+ " speed="+this.getSpeed()+" dir="+this.getDirection()+" missiles="+this.getMissileCount()
 						+" "+ this.getMissileLauncher().toString();

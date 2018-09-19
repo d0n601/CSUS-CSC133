@@ -13,6 +13,10 @@ public abstract class GameObject {
 	public static final int WORLD_HEIGHT = 768;
 	
 	
+	/**
+	 * Constructs a game object, setting its position in the world.
+	 * 
+	 */
 	public GameObject() {
 	    Random randy = new Random();
 		this.position = new Vector<>();
@@ -62,6 +66,7 @@ public abstract class GameObject {
 	/**
 	 * Returns the location of the GameObject
 	 * 
+	 * @return Vector<Double>
 	 */
 	public Vector<Double> getLocation() {
 		return this.position;
