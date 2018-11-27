@@ -6,8 +6,9 @@ import com.codename1.charts.util.ColorUtil;
 import com.codename1.ui.Graphics;
 import com.codename1.ui.geom.Point;
 
-public class Asteroid extends MovableGameObject {
+public class Asteroid extends MovableGameObject implements ISelectable {
 
+	private boolean selected;
 	private Random r;	
 	
 	/**
@@ -20,6 +21,7 @@ public class Asteroid extends MovableGameObject {
 		this.setSize((this.r.nextInt(31) + 6)*10);
 		this.setColor(ColorUtil.GRAY);
 		this.setLocation(this.r.nextInt(x), this.r.nextInt(y));
+		this.selected = false;
 	}
 		
 	/**
@@ -37,10 +39,45 @@ public class Asteroid extends MovableGameObject {
 	
 	
 	public void draw(Graphics g, Point pCmpRelPrnt) {
+		
 		int newX = this.getLocation().get(0) + pCmpRelPrnt.getX();
 		int newY = this.getLocation().get(1) + pCmpRelPrnt.getY();
+		
 		g.setColor(this.getColor());
-		g.drawRect(newX, newY, this.getSize(), this.getSize());
+		
+		if(selected) {
+			g.fillRect(newX, newY, this.getSize(), this.getSize());
+		}
+		else {
+			g.drawRect(newX, newY, this.getSize(), this.getSize());
+		}
+		
+	}
+
+	@Override
+	public Boolean contains(Point p) {
+		
+		// This object's sides.
+		int l = this.getLocation().get(0);
+		int r = this.getLocation().get(0) + this.getSize();
+		int t = this.getLocation().get(1);
+		int b = this.getLocation().get(1) - this.getSize();
+	    
+	    int px = p.getX(); 
+		int py = p.getY(); 
+		
+		return (l <= px && r >= px && t >= py && b <= py);
+		
+	}
+
+	@Override
+	public void setSelected(Boolean newSelected) {
+		this.selected = newSelected;
+	}
+
+	@Override
+	public Boolean isSelected() {
+		return this.selected;
 	}
 	
 

@@ -6,8 +6,15 @@ import com.codename1.ui.Display;
 
 public class GameWorld extends Observable implements IGameWorld {
 	
-	private IIterator gi, gii;
+	private IIterator gi;
 	
+	private BGSound bgMusic;
+	private Sound reloadSound;
+	private Sound fireMissileSound;
+	private Sound explosionSound;
+	private Sound hyperspaceSound;
+
+
 	private int clock;
 	private int score;
 	private int lives;
@@ -35,6 +42,12 @@ public class GameWorld extends Observable implements IGameWorld {
 		this.worldWidth = 0;
 		this.worldHeight = 0;
 		this.gameObjectCollection = new GameObjectCollection();
+		this.bgMusic = new BGSound("bg_music.wav");
+		this.reloadSound = new Sound("reload.wav");
+		this.fireMissileSound = new Sound("fire_missile.wav");
+		this.explosionSound = new Sound("explosion.wav");
+		this.hyperspaceSound = new Sound("hyperspace.wav");
+		this.playBgMusic();
 	}
 	
 	
@@ -98,6 +111,24 @@ public class GameWorld extends Observable implements IGameWorld {
 		return this.paused;
 	}
 	
+	
+	/**
+	 * Toggles the pause state of the game
+	 * 
+	 */
+	public void togglePaused() {
+		
+		this.paused = !this.paused;
+		
+		if(!this.paused && this.sound) {
+			this.playBgMusic();
+		}
+		else if(this.paused && this.sound) {
+			this.pauseBgMusic();
+		}
+		
+	}
+	
 
 	/**
 	 * Sets the dimensions of the game world.
@@ -141,6 +172,12 @@ public class GameWorld extends Observable implements IGameWorld {
 	 */
 	public void toggleSound() {
 		this.sound = !this.sound;
+		if(sound && !this.paused) {
+			this.playBgMusic();
+		}
+		else {
+			this.pauseBgMusic();
+		}
 	    this.setChanged();
 	    this.notifyObservers(this);
 	}
@@ -324,6 +361,7 @@ public class GameWorld extends Observable implements IGameWorld {
 			Missile newMissile = this.myShip.fireMissile();
 			if(newMissile != null) {
 				this.gameObjectCollection.add(newMissile);
+				this.playSound(fireMissileSound);
 				this.setChanged();
 			    this.notifyObservers(this);
 			}
@@ -343,6 +381,7 @@ public class GameWorld extends Observable implements IGameWorld {
 		if(this.myShip != null) { 
 			this.myShip.setMissileCount(PlayerShip.MAX_MISSILES);
 			System.out.println("Player Ship reloaded!");
+			this.playSound(this.reloadSound);
 		    this.setChanged();
 		    this.notifyObservers(this);
 		}
@@ -362,6 +401,7 @@ public class GameWorld extends Observable implements IGameWorld {
 		this.gameObjectCollection.remove(playerMissile); // Remove player's missile from game world.
 		this.score = this.getScore() + 5; // Increase player's score 5 points for the hit.
 		System.out.println("Hit! Player has destroyed an asteroid."); // Console output.
+		this.playSound(explosionSound);
 	    this.setChanged(); //
 	    this.notifyObservers(this);
 	}
@@ -372,32 +412,13 @@ public class GameWorld extends Observable implements IGameWorld {
 	 *  A Player Ship’s missile has struck and killed a Non-Player Ship.
 	 *
 	 */
-	public void killNps() {
-		
-		if(this.myShip == null) { 
-			System.out.println("Cannot execute ‘eliminate NPS’ – no Player Ship yet added to the Game World.");
-		}
-		else {
-			
-			ArrayList<Missile> playerMissiles = this.getMissiles(0);
-			ArrayList<NonPlayerShip> allNPS = this.getAllNps();
-			
-			if(playerMissiles.isEmpty()) {
-				System.out.println("Cannot execute ‘eliminate NPS’ – no Player Ship Missiles yet added to the Game World.");
-			}
-			else if(allNPS.isEmpty()) {
-				System.out.println("Cannot execute ‘eliminate NPS’ – no Non-Player Ships yet added to the Game World.");
-			}
-			else {
-				this.gameObjectCollection.remove(playerMissiles.get(0));
-				this.gameObjectCollection.remove(allNPS.get(0));
-				this.score = this.getScore() + 15;
-				System.out.println("Hit! Player Ship has destroyed an NPS.");
-			    this.setChanged();
-			    this.notifyObservers(this);
-			}	
-			
-		}
+	public void killNps(NonPlayerShip nps, Missile m) {
+		this.gameObjectCollection.remove(nps);
+		this.gameObjectCollection.remove(m);
+		this.score = this.getScore() + 15;
+		System.out.println("Hit! Player Ship has destroyed an NPS.");
+	    this.setChanged();
+	    this.notifyObservers(this);
 
 	}
 	
@@ -407,29 +428,13 @@ public class GameWorld extends Observable implements IGameWorld {
 	 * A Non-Player Ship's missile has killed the Player's Ship.
 	 * 
 	 */
-	public void killPlayerNpsMissile() {
-		
-		if(this.myShip == null) { 
-			System.out.println("Cannot execute ‘Exploded’ – no Player Ship yet added to the Game World.");
-		}
-		else {
-			
-			ArrayList<Missile> npsMissiles = this.getMissiles(1);
-			
-			if(npsMissiles.isEmpty()) {
-				System.out.println("Cannot execute ‘Exploded’ – no Non-Player Ship Missiles yet added to the Game World.");
-			}
-	
-			else {
-				this.playerShipDeath();
-				this.gameObjectCollection.remove(npsMissiles.get(0));
-				System.out.println("Player Ship Killed by NPS Missile.");
-			    this.setChanged();
-			    this.notifyObservers(this);
-			}	
-			
-		}
-		
+	public void killPlayerNpsMissile(Missile m) {			
+		this.gameObjectCollection.remove(m);
+		System.out.println("Player Ship Killed by NPS Missile.");
+		this.playerShipDeath();
+	    this.setChanged();
+	    this.notifyObservers(this);
+
 	}
 	
 	
@@ -438,60 +443,26 @@ public class GameWorld extends Observable implements IGameWorld {
 	 *  A Player Ship has struck and killed an asteroid.
 	 *
 	 */
-	public void killPlayerAsteroid() {
-		
-		if(this.myShip == null) { 
-			System.out.println("Cannot execute ‘crashed’ – no Player Ship yet added to the Game World.");
-		}
-		
-		else {
-			
-			ArrayList<Asteroid> allAsteroids = this.getAsteroids();
-			
-			if(allAsteroids.isEmpty()) {
-				System.out.println("Cannot execute ‘crashed’ – no asteroids yet added to the Game World.");
-			}
-			else {
-				this.playerShipDeath();
-				this.gameObjectCollection.remove(allAsteroids.get(0));
-				System.out.println("Player Ship Killed by Asteroid.");	
-			    this.setChanged();
-			    this.notifyObservers(this);
-			}	
-			
-		}
-		
+	public void killPlayerAsteroid(Asteroid a) {
+		this.gameObjectCollection.remove(a);
+		this.playerShipDeath();
+		System.out.println("Player Ship Killed by Asteroid.");	
+	    this.setChanged();
+	    this.notifyObservers(this);
 	}
 	
 	
 	
 	/**
-	 * A Non-Player Ship's missile has killed the Player's Ship.
+	 * A Non-Player Ship collided with and destroyed the Player's Ship.
 	 * 
 	 */
-	public void killPlayerNps() {
-		
-		if(this.myShip == null) { 
-			System.out.println("Cannot execute ‘hit’ – no Player Ship yet added to the Game World.");
-		}
-		else {
-			
-			ArrayList<NonPlayerShip> allNPS = this.getAllNps();
-			
-			if(allNPS.isEmpty()) {
-				System.out.println("Cannot execute ‘hit’ – no Non-Player Ship Missiles yet added to the Game World.");
-			}
-	
-			else {
-				this.playerShipDeath();
-				this.gameObjectCollection.remove(allNPS.get(0));
-				System.out.println("Player Ship Killed by NPS collision.");
-			    this.setChanged();
-			    this.notifyObservers(this);
-			}	
-			
-		}
-		
+	public void killPlayerNps(NonPlayerShip nps) {
+		this.gameObjectCollection.remove(nps);
+		this.playerShipDeath();
+		System.out.println("Player Ship Killed by NPS collision.");
+		this.setChanged();
+		this.notifyObservers(this);
 	}
 	
 	
@@ -500,20 +471,16 @@ public class GameWorld extends Observable implements IGameWorld {
 	 * Two Asteroids have collided.
 	 * 
 	 */
-	public void killAsteroids() {
+	public void killAsteroids(Asteroid a1, Asteroid a2) {
 		
-		ArrayList<Asteroid> allAsteroids = this.getAsteroids();
+		this.gameObjectCollection.remove(a1);
+		this.gameObjectCollection.remove(a2);
 		
-		if(allAsteroids.size() < 2) {
-			System.out.println("Cannot execute ‘exterminate asteroids’ – there are not yet two Asteroids or more added to the Game World.");
-		}
-		else {
-			this.gameObjectCollection.remove(allAsteroids.get(0));
-			this.gameObjectCollection.remove(allAsteroids.get(1));
-			System.out.println("Asteroid Collision!");
-		    this.setChanged();
-		    this.notifyObservers(this);
-		}
+		System.out.println("Asteroid Collision!");
+		
+	    this.setChanged();
+	    this.notifyObservers(this);
+		
 	}
 	
 	
@@ -522,25 +489,12 @@ public class GameWorld extends Observable implements IGameWorld {
 	 *  A Non-Player Ship has struck an Asteroid.
 	 *
 	 */
-	public void killNpsAsteroid() {
-		
-		ArrayList<Asteroid> allAsteroids = this.getAsteroids();
-		ArrayList<NonPlayerShip> allNPS = this.getAllNps();
-		
-		if(allAsteroids.isEmpty()) {
-			System.out.println("Cannot execute ‘NPS Impact Asteroid’ – no Asteroids yet added to the Game World.");
-		}
-		else if(allNPS.isEmpty()) {
-			System.out.println("Cannot execute ‘NPS Impact Asteroid’ – no Non-Player Ships yet added to the Game World.");
-		}
-		else {
-			this.gameObjectCollection.remove(allAsteroids.get(0));
-			this.gameObjectCollection.remove(allNPS.get(0));
-			System.out.println("Non-Player Ship has impacted an Asteroid..");
-		    this.setChanged();
-		    this.notifyObservers(this);
-		}	
-
+	public void killNpsAsteroid(Asteroid a, NonPlayerShip nps) {
+		this.gameObjectCollection.remove(a);
+		this.gameObjectCollection.remove(nps);
+		System.out.println("Non-Player Ship has impacted an Asteroid..");
+	    this.setChanged();
+	    this.notifyObservers(this);
 	}
 	
 	
@@ -559,6 +513,7 @@ public class GameWorld extends Observable implements IGameWorld {
 			
 			if(newMissile != null) {
 				this.gameObjectCollection.add(newMissile);
+				this.fireMissileSound.play();
 			    this.setChanged();
 			    this.notifyObservers(this);
 			}
@@ -577,7 +532,9 @@ public class GameWorld extends Observable implements IGameWorld {
 	 */
 	public void jumpHyperSpace() {
 		if(this.myShip != null) {
-			this.myShip.setLocation(worldWidth, worldHeight);
+			this.myShip.setLocation(worldWidth/2, worldHeight/2);
+			this.myShip.setSpeed(0); // If you're moving when you jump to hypersace, it sucks.
+			this.playSound(this.hyperspaceSound);
 		    this.setChanged();
 		    this.notifyObservers(this);
 		}
@@ -598,7 +555,7 @@ public class GameWorld extends Observable implements IGameWorld {
 		ArrayList<MovableGameObject>  movableObjects = this.getMoveable();
 		
 		for(MovableGameObject mo: movableObjects) {
-			mo.move(24);
+			mo.move(Game.CLOCK_MILISECONDS);
 		}
 		
 		// Reduce fuel for missiles, remove empty missiles.
@@ -629,6 +586,39 @@ public class GameWorld extends Observable implements IGameWorld {
 	}
 	
 	
+	/**
+	 * Play the background music.
+	 * 
+	 */
+	public void playBgMusic() {
+		this.bgMusic.run();
+	}
+	
+
+	
+	/**
+	 * Pause the background music.
+	 * 
+	 */
+	public void pauseBgMusic() {
+		this.bgMusic.pause();
+	}
+	
+	
+	/**
+	 * Changes selection state of object
+	 * @param go
+	 */
+	public void selectObject(ISelectable go, boolean selection) {
+		if(this.paused) {
+			go.setSelected(selection);
+			this.setChanged();
+			this.notifyObservers(this);
+		}
+		else {
+			System.out.println("Cannot select objects while game is running.");
+		}
+	} 
 	
 	/**
 	 * Quit the current game and exit.
@@ -688,12 +678,17 @@ public class GameWorld extends Observable implements IGameWorld {
 	
 	
 	
+	/**
+	 * Handle collisions for all game objects.
+	 * 
+	 */
 	public void handleCollisions() {
 		
 		// Check for collisions
 		ArrayList<GameObject> allObjects = this.getAllObjects();
-		ArrayList<GameObject> collisionObjects = new ArrayList<>();
-
+		ArrayList<GameObject> collisionD1 = new ArrayList<>();
+		ArrayList<GameObject> collisionD2 = new ArrayList<>();
+		
 		// Loop all game objects for collisions
 		for(int c = 0; c < allObjects.size(); c++) {
 			
@@ -701,55 +696,114 @@ public class GameWorld extends Observable implements IGameWorld {
 			
 			for(int d = c+1; d < allObjects.size(); d++) {
 				GameObject go2 = allObjects.get(d);
-				if( go1.collidesWith(go2)) {
-					collisionObjects.add(go1);
-					collisionObjects.add(go2);
+				if(!collisionD1.contains(go1) && !collisionD1.contains(go2) && go1.collidesWith(go2)) {
+					collisionD1.add(go1);
+					collisionD2.add(go2);
 				}
 			}
 		}
 		
 		// Loop collisions and remove them from game
-		for(GameObject co : collisionObjects) {
-			if(allObjects.contains(co)) {
-				this.gameObjectCollection.remove(co);
-				allObjects.remove(co);
-			}
-		}
-	    this.setChanged();
-	    this.notifyObservers(this);
-		
-		/*
-		while(this.gi.hasNext()) {
+		for(int c = 0; c < collisionD1.size(); c++) {
 			
-			go = this.gi.getNext();
-			allObjects.add(go);
+			boolean remove = false;
 			
-			while(this.gii.hasNext()) {		
+			GameObject go1 = collisionD1.get(c);
+			GameObject go2 = collisionD2.get(c);
+			
+			if(allObjects.contains(go1) && allObjects.contains(go2)) {
 				
-				go2 = this.gii.getNext();
-				
-				if(!go.equals(go2)) {
-					
-					if((go.collidesWith((ICollider)go2)) || (go2.collidesWith((ICollider)go))) {
-						
-						this.gameObjectCollection.remove(go);
-						this.gameObjectCollection.remove(go2);
-						
-						this.gi = this.gameObjectCollection.getIterator();
-						this.gii = this.gameObjectCollection.getIterator();
-						
-						break;
-					}	
+				if( go1 instanceof Asteroid) {
+					if(go2 instanceof Asteroid) {
+						this.killAsteroids((Asteroid)go1, (Asteroid)go2);
+						remove = true;
+					}
+					else if(go2 instanceof NonPlayerShip) {
+						this.killNpsAsteroid((Asteroid)go1, (NonPlayerShip) go2);
+						remove = true;
+					}
+					else if(go2 instanceof Missile) {
+						// NonPlayer Missiles do not destroy Asteroids!
+						if(((Missile) go2).getOwner() instanceof PlayerShip) {
+							this.killAsteroid((Asteroid)go1, (Missile)go2);
+							remove = true;
+						}						
+					}
+					else if(go2 instanceof PlayerShip) {
+						this.killPlayerAsteroid((Asteroid)go1);
+						remove = true;
+					}
 				}
 				
-
-			}	
+				else if( go1 instanceof NonPlayerShip) {
+					if(go2 instanceof Asteroid) {
+						this.killNpsAsteroid((Asteroid)go2, (NonPlayerShip) go1);
+						remove = true;
+					}
+					else if(go2 instanceof Missile) {
+						// NonPlayer Missiles do not destroy other NonPlayerShips
+						if(((Missile) go2).getOwner() instanceof PlayerShip) {
+							this.killNps((NonPlayerShip)go1, (Missile)go2);
+							remove = true;
+						}	
+						
+					}
+					else if(go2 instanceof PlayerShip) {
+						this.killPlayerNps((NonPlayerShip)go1);
+						remove = true;
+					}
+				}
+				else if( go1 instanceof Missile) {
+					if(go2 instanceof Asteroid) {
+						// NonPlayer Missiles do not destroy Asteroids
+						if(((Missile) go1).getOwner() instanceof PlayerShip) {
+							this.killAsteroid((Asteroid)go2, (Missile)go1);
+							remove = true;
+						}	
+					}
+					else if(go2 instanceof NonPlayerShip) {
+						if(((Missile) go1).getOwner() instanceof PlayerShip) {
+							this.killNps((NonPlayerShip) go2, (Missile)go1);
+							remove = true;
+						}	
+					}
+					else if(go2 instanceof PlayerShip) {
+						if(((Missile) go2).getOwner() instanceof NonPlayerShip) {
+							this.killPlayerNpsMissile((Missile)go2);
+							remove = true;
+						}
+					}
+				}
+				else if( go1 instanceof PlayerShip) {
+					if(go2 instanceof Asteroid) {
+						this.killPlayerAsteroid((Asteroid)go2);
+						remove = true;
+					}
+					else if(go2 instanceof NonPlayerShip) {
+						this.killPlayerNps((NonPlayerShip)go2);
+						remove = true;
+					}
+					else if(go2 instanceof Missile) {
+						if(((Missile) go2).getOwner() instanceof NonPlayerShip ){
+							this.killPlayerNpsMissile((Missile)go2);
+							remove = true;
+						}
+					}
+					else if(go2 instanceof SpaceStation) {
+						this.playerShipReload();
+					}
+				}
+				
+				if(remove) {
+					allObjects.remove(go1);
+					allObjects.remove(go2);
+				}
+				
+			}
 			
 		}
 		
-	    this.setChanged();
-	    this.notifyObservers(this);
-	    */
+
 	}
 	
 	
@@ -776,6 +830,18 @@ public class GameWorld extends Observable implements IGameWorld {
 		}
 	}
 	
+	
+	
+	/**
+	 * Plays game sounds when sound is turned on.
+	 * 
+	 * @param s
+	 */
+	private void playSound(Sound s) {
+		if(sound) {
+			s.play();
+		}
+	}
 	
 	
 	/**
@@ -858,29 +924,6 @@ public class GameWorld extends Observable implements IGameWorld {
 		return missiles;
 	}
 	
-	
-	
-	/**
-	 * Return all Asteroids.
-	 * 
-	 * @return ArrayList of Asteroids.
-	 * 
-	 */
-	private ArrayList<Asteroid> getAsteroids() {
-		
-		ArrayList<Asteroid> asteroids = new ArrayList<>(); 
-		
-		this.gi = this.gameObjectCollection.getIterator() ;
-		
-		while ( gi.hasNext() ) {
-			GameObject go = gi.getNext();
-			if(go instanceof Asteroid) {
-				asteroids.add((Asteroid)go);
-			}
-		}
-		
-		return asteroids;
-	}
 	
 	
 	/**

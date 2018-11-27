@@ -20,6 +20,51 @@ public class Game extends Form implements Runnable {
 	private UITimer timer;
 	private Random r;
 	
+	private Toolbar spaceToolbar;
+	private Container controlPanel;
+	private NewGameCommand newGameCommand;
+	private PauseGameCommand pauseGameCommand;
+	private SelectObjectCommand selectObjectCommand;
+	private SaveCommand saveCommand;
+	private UndoCommand undoCommand;
+	private SoundCommand soundCommand;
+	private AboutCommand aboutCommand;
+	private QuitGameCommand quitGameCommand;
+	private AddAsteroidCommand addAsteroidCommand;
+	private AddNpsCommand addNpsCommand;
+	private AddSpaceStationCommand addSpaceStationCommand;
+	private AddPlayerShipCommand addPlayerShipCommand;
+	private AcceleratePlayerShipCommand acceleratePlayerShipCommand;
+	private DeceleratePlayerShipCommand deceleratePlayerShipCommand;
+	private LeftTurnCommand leftTurnCommand;
+	private RightTurnCommand rightTurnCommand;
+	private AimLeftCommand aimLeftCommand;
+	private AimRightCommand aimRightCommand;
+	private PlayerFireMissileCommand fireMissileCommand;
+	private NpsFireMissileCommand npsFireMissileCommand;
+	private JumpHyperSpaceCommand jumpHyperSpaceCommand;
+	private ReloadCommand reloadCommand;
+	private CheckBox soundCheck;
+	
+	private SpaceButton addAsteroidButton; 
+	private SpaceButton addNpsButton;
+	private SpaceButton addSpaceStationButton;
+	private SpaceButton addPlayerShipButton; 
+	private SpaceButton accelerateButton;
+	private SpaceButton decelerateButton; 
+	private SpaceButton leftTurnButton;
+	private SpaceButton rightTurnButton;
+	private SpaceButton aimLeftButton; 
+	private SpaceButton aimRightButton; 
+	private SpaceButton psFireButton; 
+	private SpaceButton npsFireButton; 
+	private SpaceButton hyperSpaceButton;
+	private SpaceButton reloadButton;
+	private SpaceButton pauseButton;
+	private SpaceButton quitButton;
+	
+	public static int CLOCK_MILISECONDS = 24;
+	
 	
 	/**
 	 * Constructs an instance of a Game, creates the
@@ -31,184 +76,158 @@ public class Game extends Form implements Runnable {
 		this.gw = new GameWorld(); // Create the Game World
 		this.gwp = new GameWorldProxy(this.gw); // Create Game World Proxy, pass it Game World.
 		
-		this.mv = new MapView(gwp); // Create the Map View
-		this.pv = new PointsView(gwp); // Create the Points View
+		this.mv = new MapView(this.gwp); // Create the Map View
+		this.pv = new PointsView(this.gwp); // Create the Points View
 				
-		gw.addObserver(this.gwp); // Our Game World Proxy observes the game world.
-		gwp.addObserver(this.mv); // Add the Map View as an observer of the Game World Proxy.
-		gwp.addObserver(this.pv); // Add the Points as an observer of the Game World Proxy.
+		this.gw.addObserver(this.gwp); // Our Game World Proxy observes the game world.
+		this.gwp.addObserver(this.mv); // Add the Map View as an observer of the Game World Proxy.
+		this.gwp.addObserver(this.pv); // Add the Points as an observer of the Game World Proxy.
 		
 		this.timer = new UITimer(this);
-		this.timer.schedule(20, true, this);
+		this.timer.schedule(CLOCK_MILISECONDS, true, this);
 		
-		this.setLayout(new BorderLayout()); // Set Border Layout for Game From
+		this.setLayout(new BorderLayout()); // Set Border Layout for Game From	
 		
 		/* Code for Tool Bar */
-		Toolbar spaceToolbar = new Toolbar();
-		this.setToolbar(spaceToolbar);
-		spaceToolbar.setTitle("Asteroid Game (ver.a3)");
+		this.spaceToolbar = new Toolbar();
+		this.setToolbar(this.spaceToolbar);
+		this.spaceToolbar.setTitle("Asteroid Game (ver.a3)");
 
 		
 		/* Create Control Panel Container */
-		Container controlPanel = new Container(new BoxLayout(BoxLayout.Y_AXIS)); 
+		this.controlPanel = new Container(new BoxLayout(BoxLayout.Y_AXIS)); 
 		
 		/* Toolbar's overflow menu commands*/
-		NewGameCommand newGameCommand = new NewGameCommand(gw); //New
-		PauseGameCommand pauseGameCommand = new PauseGameCommand(gw);
-		SaveCommand saveCommand = new SaveCommand(gw); //Save
-		UndoCommand undoCommand = new UndoCommand(gw); //Undo
-		SoundCommand soundCommand = new SoundCommand(gw); //Sound
-		AboutCommand aboutCommand = new AboutCommand(gw); //About
-		QuitGameCommand quitGameCommand = new QuitGameCommand(gw);//Quit
+		this.newGameCommand = new NewGameCommand(this.gw); //New
+		this.pauseGameCommand = new PauseGameCommand(this.gw);
+		this.selectObjectCommand = new SelectObjectCommand(this.gw); // Select stuff.
+		this.saveCommand = new SaveCommand(this.gw); //Save
+		this.undoCommand = new UndoCommand(this.gw); //Undo
+		this.soundCommand = new SoundCommand(this.gw); //Sound
+		this.aboutCommand = new AboutCommand(this.gw); //About
+		this.quitGameCommand = new QuitGameCommand(this.gw);//Quit
 		
 
 		/* Create all required commands for game play */
-		AddAsteroidCommand addAsteroidCommand = new AddAsteroidCommand(gw);
-		AddNpsCommand addNpsCommand = new AddNpsCommand(gw); 
-		AddSpaceStationCommand addSpaceStationCommand = new AddSpaceStationCommand(gw);
-		AddPlayerShipCommand addPlayerShipCommand = new AddPlayerShipCommand(gw);
-		AcceleratePlayerShipCommand acceleratePlayerShipCommand = new AcceleratePlayerShipCommand(gw); 
-		DeceleratePlayerShipCommand deceleratePlayerShipCommand = new DeceleratePlayerShipCommand(gw);
-		LeftTurnCommand leftTurnCommand = new LeftTurnCommand(gw); 
-		RightTurnCommand rightTurnCommand = new RightTurnCommand(gw);
-		AimLeftCommand aimLeftCommand = new AimLeftCommand(gw);
-		AimRightCommand aimRightCommand = new AimRightCommand(gw);
-		PlayerFireMissileCommand fireMissileCommand = new PlayerFireMissileCommand(gw);
-		NpsFireMissileCommand npsFireMissileCommand = new NpsFireMissileCommand(gw);
-		JumpHyperSpaceCommand jumpHyperSpaceCommand = new JumpHyperSpaceCommand(gw);
-		ReloadCommand reloadCommand = new ReloadCommand(gw);
-		KillNpsCommand killNpsCommand = new KillNpsCommand(gw);
-		KillPlayerNpsMissileCommand killPlayerNpsMissileCommand = new KillPlayerNpsMissileCommand(gw);
-		KillPlayerAsteroidCommand killPlayerAsteroidCommand = new KillPlayerAsteroidCommand(gw);
-		KillPlayerNpsCommand killPlayerNpsCommand = new KillPlayerNpsCommand(gw);
-		AsteroidCollisionCommand asteroidCollisionCommand = new AsteroidCollisionCommand(gw);
-		KillNpsAsteroidCommand killNpsAsteroidCommand = new KillNpsAsteroidCommand(gw);
+		this.addAsteroidCommand = new AddAsteroidCommand(this.gw);
+		this.addNpsCommand = new AddNpsCommand(gw); 
+		this.addSpaceStationCommand = new AddSpaceStationCommand(this.gw);
+		this.addPlayerShipCommand = new AddPlayerShipCommand(this.gw);
+		this.acceleratePlayerShipCommand = new AcceleratePlayerShipCommand(this.gw); 
+		this.deceleratePlayerShipCommand = new DeceleratePlayerShipCommand(this.gw);
+		this.leftTurnCommand = new LeftTurnCommand(this.gw); 
+		this.rightTurnCommand = new RightTurnCommand(this.gw);
+		this.aimLeftCommand = new AimLeftCommand(this.gw);
+		this.aimRightCommand = new AimRightCommand(this.gw);
+		this.fireMissileCommand = new PlayerFireMissileCommand(this.gw);
+		this.npsFireMissileCommand = new NpsFireMissileCommand(this.gw);
+		this.jumpHyperSpaceCommand = new JumpHyperSpaceCommand(this.gw);
+		this.reloadCommand = new ReloadCommand(this.gw);
 					
 		/* Add commands to overflow menu */
-		spaceToolbar.addCommandToOverflowMenu(newGameCommand);
-		spaceToolbar.addCommandToOverflowMenu(saveCommand);
-		spaceToolbar.addCommandToOverflowMenu(undoCommand);
-		spaceToolbar.addCommandToOverflowMenu(pauseGameCommand);
-		spaceToolbar.addCommandToOverflowMenu(aboutCommand);
-		spaceToolbar.addCommandToOverflowMenu(quitGameCommand);
+		this.spaceToolbar.addCommandToOverflowMenu(this.newGameCommand);
+		this.spaceToolbar.addCommandToOverflowMenu(this.saveCommand);
+		this.spaceToolbar.addCommandToOverflowMenu(this.undoCommand);
+		this.spaceToolbar.addCommandToOverflowMenu(this.aboutCommand);
+		this.spaceToolbar.addCommandToOverflowMenu(this.quitGameCommand);
 		
 		/* Create buttons for commands */
-		CheckBox soundCheck = new CheckBox("Sound");
-		soundCheck.setSelected(true);
+		this.soundCheck = new CheckBox("Sound");
+		this.soundCheck.setSelected(true);
 		
-		SpaceButton addAsteroidButton = new SpaceButton("Add Asteroid"); 
-		SpaceButton addNpsButton = new SpaceButton("Add Non-Player Ship"); 
-		SpaceButton addSpaceStationButton = new SpaceButton("Add Space Station");
-		SpaceButton addPlayerShipButton = new SpaceButton("Add Player Ship"); 
-		SpaceButton accelerateButton = new SpaceButton("Accelerate ");
-		SpaceButton decelerateButton = new SpaceButton("Decelerate"); 
-		SpaceButton leftTurnButton = new SpaceButton("Left Turn");
-		SpaceButton rightTurnButton = new SpaceButton("Right Turn");
-		SpaceButton aimLeftButton = new SpaceButton("Aim Left"); 
-		SpaceButton aimRightButton = new SpaceButton("Aim Right"); 
-		SpaceButton psFireButton = new SpaceButton("PS Fire Missile"); 
-		SpaceButton npsFireButton = new SpaceButton("NPS Fire Missile"); 
-		SpaceButton hyperSpaceButton = new SpaceButton("Hyperspace Jump");
-		SpaceButton reloadButton = new SpaceButton("Reload Missiles");
-		SpaceButton missileToAsteroidButton = new SpaceButton("Missile kills Asteroid");
-		SpaceButton killNpsButton = new SpaceButton("Missile kill NPS");
-		SpaceButton killPlayerNpsMissileButton = new SpaceButton("NPS Missile kills Player");
-		SpaceButton killPlayerAsteroidButton = new SpaceButton("Asteroid kills Player");
-		SpaceButton collisionPlayerNpsButton = new SpaceButton("NPS to Player Collision");
-		SpaceButton collisionAsteroidsButton = new SpaceButton("Asteroid Collision");
-		SpaceButton collisionNpsAsteroidButton = new SpaceButton("Asteroid kills NPS");
-		SpaceButton quitButton = new SpaceButton("Quit Game");
+		this.addAsteroidButton = new SpaceButton("Add Asteroid"); 
+		this.addNpsButton = new SpaceButton("Add Non-Player Ship"); 
+		this.addSpaceStationButton = new SpaceButton("Add Space Station");
+		this.addPlayerShipButton = new SpaceButton("Add Player Ship"); 
+		this.accelerateButton = new SpaceButton("Accelerate ");
+		this.decelerateButton = new SpaceButton("Decelerate"); 
+		this.leftTurnButton = new SpaceButton("Left Turn");
+		this.rightTurnButton = new SpaceButton("Right Turn");
+		this.aimLeftButton = new SpaceButton("Aim Left"); 
+		this.aimRightButton = new SpaceButton("Aim Right"); 
+		this.psFireButton = new SpaceButton("PS Fire Missile"); 
+		this.npsFireButton = new SpaceButton("NPS Fire Missile"); 
+		this.hyperSpaceButton = new SpaceButton("Hyperspace Jump");
+		this.reloadButton = new SpaceButton("Reload Missiles");
+		this.pauseButton = new SpaceButton("Pause Game");
+		this.quitButton = new SpaceButton("Quit Game");
 
 		/* Bind buttons to their associated commands */	
-		soundCheck.setCommand(soundCommand);
-		addAsteroidButton.setCommand(addAsteroidCommand);
-		addNpsButton.setCommand(addNpsCommand);
-		addSpaceStationButton.setCommand(addSpaceStationCommand);
-		addPlayerShipButton.setCommand(addPlayerShipCommand);
-		accelerateButton.setCommand(acceleratePlayerShipCommand);
-		decelerateButton.setCommand(deceleratePlayerShipCommand);
-		leftTurnButton.setCommand(leftTurnCommand);
-		rightTurnButton.setCommand(rightTurnCommand);
-		aimRightButton.setCommand(aimRightCommand);
-		aimLeftButton.setCommand(aimLeftCommand);
-		psFireButton.setCommand(fireMissileCommand);
-		npsFireButton.setCommand(npsFireMissileCommand);
-		hyperSpaceButton.setCommand(jumpHyperSpaceCommand);
-		reloadButton.setCommand(reloadCommand);
-		killNpsButton.setCommand(killNpsCommand);
-		killPlayerNpsMissileButton.setCommand(killPlayerNpsMissileCommand);
-		killPlayerAsteroidButton.setCommand(killPlayerAsteroidCommand);
-		collisionPlayerNpsButton.setCommand(killPlayerNpsCommand);
-		collisionAsteroidsButton.setCommand(asteroidCollisionCommand);
-		collisionNpsAsteroidButton.setCommand(killNpsAsteroidCommand);
-		quitButton.setCommand(quitGameCommand);
+		this.soundCheck.setCommand(this.soundCommand);
+		this.addAsteroidButton.setCommand(this.addAsteroidCommand);
+		this.addNpsButton.setCommand(this.addNpsCommand);
+		this.addSpaceStationButton.setCommand(this.addSpaceStationCommand);
+		this.addPlayerShipButton.setCommand(this.addPlayerShipCommand);
+		this.accelerateButton.setCommand(this.acceleratePlayerShipCommand);
+		this.decelerateButton.setCommand(this.deceleratePlayerShipCommand);
+		this.leftTurnButton.setCommand(this.leftTurnCommand);
+		this.rightTurnButton.setCommand(this.rightTurnCommand);
+		this.aimRightButton.setCommand(this.aimRightCommand);
+		this.aimLeftButton.setCommand(this.aimLeftCommand);
+		this.psFireButton.setCommand(this.fireMissileCommand);
+		this.npsFireButton.setCommand(this.npsFireMissileCommand);
+		this.hyperSpaceButton.setCommand(this.jumpHyperSpaceCommand);
+		this.pauseButton.setCommand(this.pauseGameCommand);
 		
 		/* Add buttons to control panel */
-		controlPanel.add(soundCheck);
-		controlPanel.add(addAsteroidButton);
-		controlPanel.add(addNpsButton);
-		controlPanel.add(addSpaceStationButton);
-		controlPanel.add(addPlayerShipButton);
-		controlPanel.add(accelerateButton);
-		controlPanel.add(decelerateButton);
-		controlPanel.add(leftTurnButton);
-		controlPanel.add(rightTurnButton);
-		controlPanel.add(aimLeftButton);
-		controlPanel.add(aimRightButton);
-		controlPanel.add(psFireButton);
-		controlPanel.add(npsFireButton);
-		controlPanel.add(hyperSpaceButton);
-		controlPanel.add(reloadButton);
-		controlPanel.add(missileToAsteroidButton);
-		controlPanel.add(killNpsButton);
-		controlPanel.add(killPlayerNpsMissileButton);
-		controlPanel.add(killPlayerAsteroidButton);
-		controlPanel.add(collisionPlayerNpsButton);
-		controlPanel.add(collisionAsteroidsButton);
-		controlPanel.add(collisionNpsAsteroidButton);
-		controlPanel.add(quitButton);
+		this.controlPanel.add(this.soundCheck);
+		this.controlPanel.add(this.addAsteroidButton);
+		this.controlPanel.add(this.addNpsButton);
+		this.controlPanel.add(this.addSpaceStationButton);
+		this.controlPanel.add(this.addPlayerShipButton);
+		this.controlPanel.add(this.accelerateButton);
+		this.controlPanel.add(this.decelerateButton);
+		this.controlPanel.add(this.leftTurnButton);
+		this.controlPanel.add(this.rightTurnButton);
+		this.controlPanel.add(this.aimLeftButton);
+		this.controlPanel.add(this.aimRightButton);
+		this.controlPanel.add(this.psFireButton);
+		this.controlPanel.add(this.npsFireButton);
+		this.controlPanel.add(this.hyperSpaceButton);
+		this.controlPanel.add(this.reloadButton);
+		this.controlPanel.add(this.pauseButton);
+		this.controlPanel.add(this.quitButton);
 
 		/* Add commands to hamburger menu */
-		spaceToolbar.addCommandToSideMenu(addAsteroidCommand);
-		spaceToolbar.addCommandToSideMenu(addNpsCommand); 
-		spaceToolbar.addCommandToSideMenu(addSpaceStationCommand);	
-		spaceToolbar.addCommandToSideMenu(addPlayerShipCommand);
-		spaceToolbar.addCommandToSideMenu(acceleratePlayerShipCommand);
-		spaceToolbar.addCommandToSideMenu(deceleratePlayerShipCommand);
-		spaceToolbar.addCommandToSideMenu(leftTurnCommand);	
-		spaceToolbar.addCommandToSideMenu(rightTurnCommand);	
-		spaceToolbar.addCommandToSideMenu(aimLeftCommand);
-		spaceToolbar.addCommandToSideMenu(aimRightCommand);
-		spaceToolbar.addCommandToSideMenu(fireMissileCommand);
-		spaceToolbar.addCommandToSideMenu(npsFireMissileCommand);
-		spaceToolbar.addCommandToSideMenu(jumpHyperSpaceCommand);
-		spaceToolbar.addCommandToSideMenu(reloadCommand);
-		spaceToolbar.addCommandToSideMenu(killNpsCommand);
-		spaceToolbar.addCommandToSideMenu(killPlayerNpsMissileCommand);
-		spaceToolbar.addCommandToSideMenu(killPlayerAsteroidCommand);
-		spaceToolbar.addCommandToSideMenu(killPlayerNpsCommand);
-		spaceToolbar.addCommandToSideMenu(asteroidCollisionCommand);
-		spaceToolbar.addCommandToSideMenu(killNpsAsteroidCommand);
-		spaceToolbar.addCommandToSideMenu(quitGameCommand);
+		this.spaceToolbar.addCommandToSideMenu(this.addAsteroidCommand);
+		this.spaceToolbar.addCommandToSideMenu(this.addNpsCommand); 
+		this.spaceToolbar.addCommandToSideMenu(this.addSpaceStationCommand);	
+		this.spaceToolbar.addCommandToSideMenu(this.addPlayerShipCommand);
+		this.spaceToolbar.addCommandToSideMenu(this.acceleratePlayerShipCommand);
+		this.spaceToolbar.addCommandToSideMenu(this.deceleratePlayerShipCommand);
+		this.spaceToolbar.addCommandToSideMenu(this.leftTurnCommand);	
+		this.spaceToolbar.addCommandToSideMenu(this.rightTurnCommand);	
+		this.spaceToolbar.addCommandToSideMenu(this.aimLeftCommand);
+		this.spaceToolbar.addCommandToSideMenu(this.aimRightCommand);
+		this.spaceToolbar.addCommandToSideMenu(this.fireMissileCommand);
+		this.spaceToolbar.addCommandToSideMenu(this.npsFireMissileCommand);
+		this.spaceToolbar.addCommandToSideMenu(this.jumpHyperSpaceCommand);
+		this.spaceToolbar.addCommandToSideMenu(this.reloadCommand);
+		this.spaceToolbar.addCommandToSideMenu(this.quitGameCommand);
 		
 		/* Key Listeners */
-		addKeyListener(-91, acceleratePlayerShipCommand); // Increase ship speed.
-		addKeyListener(-92, deceleratePlayerShipCommand); // Decrease ship speed.
-		addKeyListener(-93, leftTurnCommand); // Turn ship left.
-		addKeyListener(-94, rightTurnCommand); // Turn ship right.
-		addKeyListener(-90, fireMissileCommand); // Player Ship fires missile.
-		addKeyListener(44, aimLeftCommand); // Missile Launcher aim left.		
-		addKeyListener(46, aimRightCommand); // Missile Launcher aim right.
-		addKeyListener('j', jumpHyperSpaceCommand); // Jump through hyperspace.
+		addKeyListener(-91, this.acceleratePlayerShipCommand); // Increase ship speed.
+		addKeyListener(-92, this.deceleratePlayerShipCommand); // Decrease ship speed.
+		addKeyListener(-93, this.leftTurnCommand); // Turn ship left.
+		addKeyListener(-94, this.rightTurnCommand); // Turn ship right.
+		addKeyListener(-90, this.fireMissileCommand); // Player Ship fires missile.
+		addKeyListener(44, this.aimLeftCommand); // Missile Launcher aim left.		
+		addKeyListener(46, this.aimRightCommand); // Missile Launcher aim right.
+		addKeyListener('j', this.jumpHyperSpaceCommand); // Jump through hyperspace.
+		
+		
+		//PointerListener p = new PointerListener(this.gw);
+		//this.addPlayerShipCommand.
+		this.mv.addPointerPressedListener(this.selectObjectCommand);
 		
 		/* Add PointsView, control panel, and MapView to the form */
-		this.add(BorderLayout.NORTH, pv);
-		this.add(BorderLayout.WEST, controlPanel);
-		this.add(BorderLayout.CENTER, mv);
-
+		this.add(BorderLayout.NORTH, this.pv);
+		this.add(BorderLayout.WEST, this.controlPanel);
+		this.add(BorderLayout.CENTER, this.mv);
+		
 		this.show(); // Show the form
 		
-		this.gw.setDimensions(mv.getWidth(), mv.getHeight()); // Set the dimension of the game world.
+		this.gw.setDimensions(this.mv.getWidth(), this.mv.getHeight()); // Set the dimension of the game world.
 	}
 
 
@@ -216,24 +235,27 @@ public class Game extends Form implements Runnable {
 	public void run() {
 		
 		if(!this.gw.isPaused()) {
-			this.gw.tickClock(); // Advance the game clock
-			this.gw.handleCollisions();
-		}
+			
+			this.gw.tickClock(); // Advance the game clock.
+			
+			this.gw.handleCollisions(); // Handle collisions.
 
-	
-		this.r = new Random();
-		/*
-		// A .25% chance we'll add an NPS this cycle.
-		if(this.r.nextInt(400) < 1 ) {
-			this.gw.addNps();
+			this.r = new Random();
+			// .25% chance we'll add an NPS this cycle.
+			if(this.r.nextInt(400) < 1 ) {
+				this.gw.addNps();
+			}
+			// 2% chance we'll add an Asteroid.
+			if(this.r.nextInt(100) < 2 ) {
+				this.gw.addAsteroid();
+			}			
 		}
-		*/
 		
-		// A 1% chance we'll add an Asteroid.
-		if(this.r.nextInt(100) < 1 ) {
-			this.gw.addAsteroid();
-		}
-    
+		
+		
 	}
-
+	
+	
 }
+
+

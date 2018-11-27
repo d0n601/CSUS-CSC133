@@ -14,6 +14,8 @@ public interface IGameWorld {
 	
 	public boolean isPaused();
 	
+	public void togglePaused();
+	
 	public void setDimensions(int x, int y);
 
 	public int getMissileCount();
@@ -46,19 +48,19 @@ public interface IGameWorld {
 	
 	public void playerShipReload();
 	
-	public void killAsteroid(Asteroid deadAsteroid, Missile playerMissile);
+	public void killAsteroid(Asteroid a, Missile m);
 	
-	public void killNps();
+	public void killNps(NonPlayerShip nps, Missile m);
 	
-	public void killPlayerNpsMissile();
+	public void killPlayerNpsMissile(Missile m);
 	
-	public void killPlayerAsteroid();
+	public void killPlayerAsteroid(Asteroid a);
 	
-	public void killPlayerNps();
+	public void killPlayerNps(NonPlayerShip nps);
 	
-	public void killAsteroids();
+	public void killAsteroids(Asteroid a1, Asteroid a2);
 	
-	public void killNpsAsteroid();
+	public void killNpsAsteroid(Asteroid a, NonPlayerShip nps);
 	
 	public void npsFireMissile();
 	
@@ -67,7 +69,13 @@ public interface IGameWorld {
 	public void tickClock();
 	
 	public GameObjectCollection getCollection();
+	
+	public void playBgMusic();
+	
+	public void pauseBgMusic();
 		
+	public void selectObject(ISelectable go, boolean selection);
+	
 	public void quitGame();	
 	
 }

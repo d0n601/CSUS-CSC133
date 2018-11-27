@@ -4,7 +4,7 @@ import com.codename1.charts.util.ColorUtil;
 import com.codename1.ui.Graphics;
 import com.codename1.ui.geom.Point;
 
-public class Missile extends MovableGameObject {
+public class Missile extends MovableGameObject implements ISelectable {
 
 	private Ship owner;
 	private int fuelLevel; 
@@ -65,7 +65,7 @@ public class Missile extends MovableGameObject {
 	
 	
 	/**
-	 * 
+	 * Draw the missile
 	 * 
 	 */
 	public void draw(Graphics g, Point pCmpRelPrnt) {
@@ -99,6 +99,27 @@ public class Missile extends MovableGameObject {
 				" color=["+ColorUtil.red(this.getColor())+", "+ColorUtil.green(this.getColor())+", "+ColorUtil.blue(this.getColor())+"]"
 						+ " speed="+this.getSpeed()+" dir="+this.getDirection()+" fuel="+this.getFuelLevel();
 		return s;
+	}
+
+
+	@Override
+	public Boolean contains(Point pPtrRelPrnt) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public void setSelected(Boolean select) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public Boolean isSelected() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -8,6 +8,7 @@ public class PlayerShip extends Ship implements ISteerable {
 
 	private MissileLauncherSteerable missileLauncher;	
 	
+	private int size;
 	
 	public static final int NORTH = 0;
 	public static final int MAX_MISSILES = 10;
@@ -20,6 +21,7 @@ public class PlayerShip extends Ship implements ISteerable {
 	public PlayerShip(int x, int y) {
 		super(x, y);
 		this.setSpeed(0);
+		this.size = 25;
 		this.setLocation(x/2, y/2);
 		this.setColor(ColorUtil.MAGENTA);
 		this.setDirection(NORTH);
@@ -79,8 +81,8 @@ public class PlayerShip extends Ship implements ISteerable {
 		int newX = pCmpRelPrnt.getX() + this.getLocation().get(0);
 		int newY = pCmpRelPrnt.getY() + this.getLocation().get(1);
 	
-        int[] Xcoord = { newX - 25, newX + 25, newX};
-        int[] Ycoord = { newY - 25, newY - 25, (newY-75)};
+        int[] Xcoord = { newX - this.size, newX + this.size, newX};
+        int[] Ycoord = { newY - this.size, newY - this.size, (newY-this.size*3)};
 		
         g.setColor(this.getColor());
         g.drawPolygon(Xcoord,Ycoord,3);

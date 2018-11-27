@@ -10,10 +10,8 @@ import com.codename1.ui.plaf.Border;
 
 public class MapView extends Container implements Observer {
 	
-	private GameWorldProxy gwp;
-
 	private IIterator gi;
-	
+	private GameWorldProxy gwp;
 	private GameObjectCollection gameObjectCollection;
 
 	
@@ -28,23 +26,25 @@ public class MapView extends Container implements Observer {
 	@Override 
 	public void paint(Graphics g) {
 		
-		//super.paint(g);
-		while ( gi.hasNext() ) {
-			GameObject go = gi.getNext();
+		super.paint(g);
+		while ( this.gi.hasNext() ) {
+			GameObject go = this.gi.getNext();
 			Point pCmpRelPrnt = new Point(this.getX(), this.getY());
 			go.draw(g, pCmpRelPrnt);
 		}
 		
-		//super.paint(g);
 	}
 	
 	
+	@Override
 	public void update (Observable o, Object arg) {
 		IGameWorld gw =  (IGameWorld) arg;
 		this.gameObjectCollection = gw.getCollection();
 		this.gi = this.gameObjectCollection.getIterator();
 		this.repaint();		
 	}
+	
+	
 	
 	
 }

@@ -42,6 +42,11 @@ public class GameWorldProxy extends Observable implements IGameWorld, Observer {
 	}
 	
 	@Override
+	public void togglePaused() {
+		System.out.println("Illegally accessed method.");
+	}
+	
+	@Override
 	public void setDimensions(int x, int y) {
 		System.out.println("Illegally accessed method.");
 	}
@@ -122,37 +127,37 @@ public class GameWorldProxy extends Observable implements IGameWorld, Observer {
 	}
 
 	@Override
-	public void killAsteroid(Asteroid deadAsteroid, Missile playerMissile) {
+	public void killAsteroid(Asteroid deadAsteroid, Missile m) {
 		System.out.println("Illegally accessed method.");
 	}
 
 	@Override
-	public void killNps() {
+	public void killNps(NonPlayerShip nps, Missile m) {
 		System.out.println("Illegally accessed method.");	
 	}
 
 	@Override
-	public void killPlayerNpsMissile() {
+	public void killPlayerNpsMissile(Missile m) {
 		System.out.println("Illegally accessed method.");
 	}
 
 	@Override
-	public void killPlayerAsteroid() {
+	public void killPlayerAsteroid(Asteroid a) {
 		System.out.println("Illegally accessed method.");	
 	}
 
 	@Override
-	public void killPlayerNps() {
+	public void killPlayerNps(NonPlayerShip nps) {
 		System.out.println("Illegally accessed method.");
 	}
 
 	@Override
-	public void killAsteroids() {
+	public void killAsteroids(Asteroid a1, Asteroid a2) {
 		System.out.println("Illegally accessed method.");
 	}
 
 	@Override
-	public void killNpsAsteroid() {
+	public void killNpsAsteroid(Asteroid a, NonPlayerShip nps) {
 		System.out.println("Illegally accessed method.");
 	}
 
@@ -170,6 +175,11 @@ public class GameWorldProxy extends Observable implements IGameWorld, Observer {
 	public void tickClock() {
 		System.out.println("Illegally accessed method.");	
 	}
+	
+	@Override
+	public void selectObject(ISelectable go, boolean selection) {
+		System.out.println("Illegally accessed method.");
+	}
 
 	@Override
 	public void quitGame() {
@@ -186,6 +196,16 @@ public class GameWorldProxy extends Observable implements IGameWorld, Observer {
 		this.gw = (GameWorld)data;
 	    this.setChanged();
 	    this.notifyObservers(this.gw);
+	}
+	
+	@Override
+	public void playBgMusic() {
+		System.out.println("Illegally accessed method.");
+	}
+	
+	@Override
+	public void pauseBgMusic() {
+		System.out.println("Illegally accessed method.");
 	}
 	
 	@Override

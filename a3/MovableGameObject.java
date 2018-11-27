@@ -12,7 +12,7 @@ public abstract class MovableGameObject extends GameObject implements IMoveable 
 	private int worldWidth;
 	private int worldHeight;
 	
-	public static final int MAX_SPEED = 10;
+	public static final int MAX_SPEED = 15;
 	public static final int POLAR_LIMIT = 359;
 
 	
@@ -26,7 +26,7 @@ public abstract class MovableGameObject extends GameObject implements IMoveable 
 		this.worldWidth = x;
 		this.worldHeight = y;
 		this.r = new Random();
-		this.speed = r.nextInt(MAX_SPEED); // Speed initialized between 0 and 10 at random.
+		this.speed = r.nextInt(MAX_SPEED)+2; // Speed initialized at random.
 		this.direction = r.nextInt(POLAR_LIMIT); // Direction initialized between 0 and 359 at random.
 	}
 	
@@ -37,7 +37,7 @@ public abstract class MovableGameObject extends GameObject implements IMoveable 
 	public void move(int elapsedTime) {
 		
 		// Polar to Cartesian Conversion.
-		double r = this.getSpeed(); // Speed is equal to radius assuming it's /1 unit per tick.
+		double r = (this.getSpeed() * elapsedTime)/40; // radius = distance = velocity * time, divided by constant to slow it down.
 		double theta = Math.toRadians(90 - this.getDirection()); // Rotate 90 so North is 0.
 		
 		int deltaX = (int)Math.round(r * Math.cos(theta)); // Movement in the X direction.
@@ -46,6 +46,7 @@ public abstract class MovableGameObject extends GameObject implements IMoveable 
 		int newX = this.getLocation().get(0) + deltaX; // Total X.
 		int newY = this.getLocation().get(1) - deltaY; // Total Y.
 		
+		// Make it come out of the other side of the viewport.
 		if(newX > this.worldWidth) {
 			newX = 0;
 		}
